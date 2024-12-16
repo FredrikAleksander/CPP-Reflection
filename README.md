@@ -14,7 +14,6 @@ There are three buildable sections in this repository - [Runtime](https://github
 
 ### Requirements
  - [LLVM 3.8.0](http://llvm.org/releases/download.html)+ (for libClang)
- - [Boost 1.59](http://www.boost.org/users/history/version_1_59_0.html)+ 
  - A C++11 compliant compiler - I've tested on MSVC 14, G++ 4.8 and
    Clang++ 3.6.
 
@@ -49,11 +48,6 @@ The installation should be located in `/usr/lib/llvm-3.8`
 
 Once installed, set an environment variable `LLVM_ROOT` to the root of the installation directory. You can skip this step, but an environment variable makes the CMake command simpler.
 
-##### Install Boost 1.59
-
-This part sucks, but we've gotta do it. Download the [sources](https://sourceforge.net/projects/boost/files/boost/1.59.0/) and build it using [these instructions](http://www.boost.org/doc/libs/1_59_0/more/getting_started/unix-variants.html#easy-build-and-install).
-
-Once installed, set an environment variable to `BOOST_ROOT` like we did for LLVM.
 
 *Create a build directory.*
 
@@ -65,7 +59,7 @@ Once installed, set an environment variable to `BOOST_ROOT` like we did for LLVM
 
 *If you skipped creating environment variables, you'll have to define variables for resolution in CMake directly - just add these two switches in the command above.*
 
-    -DLLVM_ROOT=<PATH> -DBOOST_ROOT=<PATH>
+    -DLLVM_ROOT=<PATH>
     
 *Build - you can use any IDE if applicable to the generator, but you can also just build straight from CMake.*
 
@@ -88,7 +82,7 @@ Just like the other two targets you'll do the following -
 
     cmake --build .
 
-Remember to add the extra switches for defining `LLVM_ROOT` and `BOOST_ROOT` if you skipped adding them as an environment variable.
+Remember to add the extra switches for defining `LLVM_ROOT` if you skipped adding them as an environment variable.
 
 All of the examples build to a simple executable that demonstrates the specific features/functionality in use.
 
