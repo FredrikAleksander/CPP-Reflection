@@ -14,8 +14,7 @@ There are three buildable sections in this repository - [Runtime](https://github
 
 ### Requirements
  - [LLVM 3.8.0](http://llvm.org/releases/download.html)+ (for libClang)
- - A C++11 compliant compiler - I've tested on MSVC 14, G++ 4.8 and
-   Clang++ 3.6.
+ - A C++17 compliant compiler
 
 #### Runtime
 There are no dependencies in the runtime so building is pretty straightforward.
