@@ -1,5 +1,6 @@
 /* ----------------------------------------------------------------------------
 ** Copyright (c) 2016 Austin Brunkhorst, All Rights Reserved.
+** Copyright (c) 2024 Fredrik A. Kristiansen, All Rights Reserved.
 **
 ** ReflectionParser.cpp
 ** --------------------------------------------------------------------------*/
@@ -15,9 +16,10 @@
 #include "LanguageTypes/Function.h"
 #include "LanguageTypes/Enum.h"
 
-#include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/predicate.hpp>
+#include <regex>
+
+// #include <boost/algorithm/string.hpp>
+// #include <boost/algorithm/string/predicate.hpp>
 
 #include <fstream>
 
@@ -50,7 +52,7 @@
 
 namespace
 {
-    const boost::regex kSpecialCharsRegex( "[^a-zA-Z0-9]+" );
+    const std::regex kSpecialCharsRegex( "[^a-zA-Z0-9]+" );
 }
 
 ReflectionParser::ReflectionParser(const ReflectionOptions &options)
@@ -61,7 +63,7 @@ ReflectionParser::ReflectionParser(const ReflectionOptions &options)
     , m_moduleFileSourceTemplate( "" )
 {
     // replace special characters in target name with underscores
-    m_options.targetName = boost::regex_replace(
+    m_options.targetName = std::regex_replace(
         m_options.targetName, 
         kSpecialCharsRegex, 
         "_" 
@@ -126,6 +128,15 @@ void ReflectionParser::Parse(void)
     buildEnums( cursor, tempNamespace );
 }
 
+static fs::path change_extension(const fs::path &path, const std::string &ext)
+{
+    fs::path result = path;
+
+    result.replace_extension( ext );
+
+    return result;
+}
+
 void ReflectionParser::GenerateFiles(void)
 {
     fs::path sourceRootDirectory( m_options.sourceRoot );
@@ -181,7 +192,7 @@ void ReflectionParser::GenerateFiles(void)
         auto outputFileSource = change_extension( outputFile, "Generated.cpp" );
 
         // module file name
-        file.second.name = boost::regex_replace(
+        file.second.name = std::regex_replace(
             relativeDir,
             kSpecialCharsRegex,
             "_"
@@ -199,8 +210,8 @@ void ReflectionParser::GenerateFiles(void)
         // if the generated file header/source doesn't exist, we need to regenerate
         if (m_options.forceRebuild || 
             !metaCacheFileExists || 
-            !exists( outputFileHeader ) ||
-            !exists( outputFileSource )
+            !fs::exists( outputFileHeader ) ||
+            !fs::exists( outputFileSource )
         )
         {
             generateModuleFile( outputFileHeader, outputFileSource, file.first, file.second );
@@ -208,9 +219,9 @@ void ReflectionParser::GenerateFiles(void)
             continue;
         }
 
-        auto lastSourceWrite = last_write_time( filePath );
-        auto lastGeneratedHeaderWrite = last_write_time( outputFileHeader );
-        auto lastGeneratedSourceWrite = last_write_time( outputFileSource );
+        auto lastSourceWrite = fs::last_write_time( filePath );
+        auto lastGeneratedHeaderWrite = fs::last_write_time( outputFileHeader );
+        auto lastGeneratedSourceWrite = fs::last_write_time( outputFileSource );
 
         // if the generated file is older than the source file, we need to regenerate
         if (lastSourceWrite > lastGeneratedHeaderWrite || lastSourceWrite > lastGeneratedSourceWrite)
@@ -368,8 +379,8 @@ void ReflectionParser::buildClasses(
         {
             auto displayName = child.GetDisplayName( );
 
-            // external declaration; they're always compiled, but only registered
-            if (boost::starts_with( displayName, kMetaExternalTypeDefName ))
+            // external declaration; they're always compiled, but only registered;
+            if (displayName.find(kMetaExternalTypeDefName) == 0)
             {
                 m_externals.emplace_back(
                     std::make_shared<External>( child.GetTypedefType( ).GetDeclaration( ) )

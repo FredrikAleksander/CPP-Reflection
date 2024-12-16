@@ -1,5 +1,6 @@
 /* ----------------------------------------------------------------------------
 ** Copyright (c) 2016 Austin Brunkhorst, All Rights Reserved.
+** Copyright (c) 2024 Fredrik A. Kristiansen, All Rights Reserved.
 **
 ** Function.cpp
 ** --------------------------------------------------------------------------*/
@@ -9,8 +10,7 @@
 #include "LanguageTypes/Function.h"
 #include "LanguageTypes/Class.h"
 
-#include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include "ReflectionParserUtils.h"
 
 Function::Function(
     const Cursor &cursor, 
@@ -58,7 +58,8 @@ bool Function::isAccessible(void) const
 
 std::string Function::getQualifiedSignature(void) const
 {
-    auto argsList = boost::join( m_signature, ", " );
+    auto argsList = join_strings( m_signature, ", " );
 
-    return (boost::format( "%1%(*)(%2%)" ) % m_returnType % argsList).str( );
+    return m_returnType + "(*)( " + argsList + " )";
+    //return (boost::format( "%1%(*)(%2%)" ) % m_returnType % argsList).str( );
 }

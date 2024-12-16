@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.12)
 
 project(MetaParser CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../CMake")
+set (CMAKE_CXX_STANDARD 17)
 
 include(Precompiled)
 
@@ -17,6 +18,7 @@ set(HEADER_FILES
     Precompiled.h
     ReflectionOptions.h
     ReflectionParser.h
+    ReflectionParserUtils.h
     ReservedTypes.h
     Switches.h
     Templates.h
@@ -52,6 +54,7 @@ set(SOURCE_FILES
     MetaUtils.cpp
     Precompiled.cpp
     ReflectionParser.cpp
+    ReflectionParserUtils.cpp
     LanguageTypes/Class.cpp
     LanguageTypes/Constructor.cpp
     LanguageTypes/Enum.cpp
@@ -64,24 +67,7 @@ set(SOURCE_FILES
     LanguageTypes/Method.cpp
 )
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_NO_SYSTEM_PATHS ON)
-set(Boost_ALL_NO_LIB ON)
-
 # disable auto-linking
-add_definitions(-DBOOST_ALL_NO_LIB)
-
-find_package(Boost 1.59.0 REQUIRED 
-    COMPONENTS 
-    system
-    filesystem
-    program_options
-    regex
-)
-
-# add boost includes
-include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(LLVM REQUIRED)
 
@@ -101,7 +87,7 @@ add_executable(MetaParser ${HEADER_FILES} ${SOURCE_FILES})
 link_directories(${LLVM_LIBRARY_DIR})
 
 # statically link with Boost & LibClang
-target_link_libraries(MetaParser ${Boost_LIBRARIES} ${LIBCLANG_LIBRARY})
+target_link_libraries(MetaParser ${LIBCLANG_LIBRARY})
 
 set_precompiled_header(MetaParser Precompiled.h Precompiled.cpp)
 

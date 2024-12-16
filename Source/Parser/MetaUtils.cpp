@@ -1,5 +1,6 @@
 /* ----------------------------------------------------------------------------
 ** Copyright (c) 2016 Austin Brunkhorst, All Rights Reserved.
+** Copyright (c) 2024 Fredrik A. Kristiansen, All Rights Reserved.
 **
 ** MetaUtils.cpp
 ** --------------------------------------------------------------------------*/
@@ -8,7 +9,7 @@
 
 #include "MetaUtils.h"
 
-#include <boost/algorithm/string/join.hpp>
+#include "ReflectionParserUtils.h"
 
 #include <fstream>
 #include <exception>
@@ -53,7 +54,7 @@ namespace utils
             type.GetDisplayName( )
         );
 
-        return boost::join( parentNamespace, "::" );
+        return join_strings( parentNamespace, "::" );
     }
 
     std::string GetQualifiedName(
@@ -61,7 +62,7 @@ namespace utils
         const Namespace &currentNamespace
     )
     {
-        auto name = boost::join( currentNamespace, "::" );
+        auto name = join_strings( currentNamespace, "::" );
 
         if (!currentNamespace.empty( ))
             name += "::";
@@ -133,7 +134,7 @@ namespace utils
         output.close( );
     }
 
-    boost::filesystem::path MakeRelativePath(const boost::filesystem::path &from, const boost::filesystem::path &to)
+    std::filesystem::path MakeRelativePath(const std::filesystem::path &from, const std::filesystem::path &to)
     {
         // Start at the root path and while they are the same then do nothing then when they first
         // diverge take the remainder of the two path and replace the entire from path with ".."
@@ -148,7 +149,7 @@ namespace utils
             ++itFrom;
         }
 
-        boost::filesystem::path finalPath;
+        std::filesystem::path finalPath;
 
         while (itFrom != from.end( ))
         {

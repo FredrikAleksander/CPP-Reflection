@@ -1,5 +1,6 @@
 /* ----------------------------------------------------------------------------
 ** Copyright (c) 2016 Austin Brunkhorst, All Rights Reserved.
+** Copyright (c) 2024 Fredrik A. Kristiansen, All Rights Reserved.
 **
 ** Method.cpp
 ** --------------------------------------------------------------------------*/
@@ -9,8 +10,7 @@
 #include "LanguageTypes/Class.h"
 #include "LanguageTypes/Method.h"
 
-#include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include "ReflectionParserUtils.h"
 
 Method::Method(
     const Cursor &cursor, 
@@ -62,13 +62,14 @@ bool Method::isAccessible(void) const
 
 std::string Method::getQualifiedSignature(void) const
 {
-    auto argsList = boost::join( m_signature, ", " );
+    auto argsList = join_strings( m_signature, ", " );
 
     std::string constNess = m_isConst ? " const" : "";
 
-    return (boost::format( "%1%(%2%::*)(%3%)%4%" ) % 
-        m_returnType % 
-        m_parent->m_qualifiedName % 
-        argsList % constNess
-    ).str( );
+    return m_returnType + " (" + m_parent->m_qualifiedName + "::*)(" + argsList + ")" + constNess;
+    // return (boost::format( "%1%(%2%::*)(%3%)%4%" ) % 
+    //     m_returnType % 
+    //     m_parent->m_qualifiedName % 
+    //     argsList % constNess
+    // ).str( );
 }

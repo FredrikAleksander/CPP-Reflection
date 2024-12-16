@@ -1,5 +1,6 @@
 /* ----------------------------------------------------------------------------
 ** Copyright (c) 2016 Austin Brunkhorst, All Rights Reserved.
+** Copyright (c) 2024 Fredrik A. Kristiansen, All Rights Reserved.
 **
 ** Constructor.cpp
 ** --------------------------------------------------------------------------*/
@@ -9,7 +10,7 @@
 #include "LanguageTypes/Class.h"
 #include "LanguageTypes/Constructor.h"
 
-#include <boost/algorithm/string/join.hpp>
+#include "ReflectionParserUtils.h"
 
 Constructor::Constructor(
     const Cursor &cursor, 
@@ -82,5 +83,5 @@ std::string Constructor::getTemplateParameters(bool isDynamic) const
     // Args...
     params.insert( params.end( ), m_signature.begin( ), m_signature.end( ) );
 
-    return boost::join( params, ", " );
+    return join_strings( params, ", " );
 }
